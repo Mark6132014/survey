@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey |</title>
+    <link rel="shortcut icon" href="icon.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #surveyOutput {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00ff11;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00b303;
+        }
+        .submitText {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Survey Preview</h1>
+    </header>
+    <main>
+        <div id="surveyOutput"></div>
+        <button id="submitSurvey">Submit Survey</button>
+        <p class="submitText" style="display: none;">Submitted Survey</p>
+    </main>
+    <script>
+        // Function to get URL parameters
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        // Populate the survey preview with URL parameters
+        function populateSurveyPreview() {
+            const params = getUrlParams();
+            const surveyOutput = document.getElementById('surveyOutput');
+            if (params.title) {
+                surveyOutput.innerHTML += `<h2 class="surveyTitle">${params.title}</h2>`;
+                document.querySelector("title").innerText = `Survey | ${surveyOutput.querySelector(".surveyTitle").innerHTML}`;
+            }
+            if (params.questions) {
+                const questions = JSON.parse(decodeURIComponent(params.questions));
+                questions.forEach(q => {
+                    surveyOutput.innerHTML += `<div><strong>${q.question}</strong><br>`;
+                    q.options.forEach((option, index) => {
+                        surveyOutput.innerHTML += `
+                            <label>
+                                <input type="radio" name="${q.question}" value="${option}">
+                                ${option}
+                            </label><br>
+                        `;
+                    });
+                    surveyOutput.innerHTML += '</div>';
+                });
+            }
+        }
+
+        // Call populateSurveyPreview on page load
+        window.onload = populateSurveyPreview;
+
+        // Handle survey submission
+        document.getElementById('submitSurvey').addEventListener('click', function() {
+            document.querySelector(".submitText").style.display = "block";
+            // Here you can add functionality to save the survey data
+        });
+    </script>
+</body>
+</html>

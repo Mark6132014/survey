@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Creator</title>
+    <link rel="shortcut icon" href="icon.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Create Your Survey</h1>
+    </header>
+    <main>
+        <form id="surveyInitForm">
+            <div>
+                <label for="surveyTitle">Survey Title:</label>
+                <input type="text" id="surveyTitle" name="surveyTitle" required>
+            </div>
+            <div id="questionsContainer">
+                <div class="question">
+                    <label for="question">Question:</label>
+                    <input type="text" name="question" required>
+                    <label for="options">Options (comma separated):</label>
+                    <input type="text" name="options" required>
+                </div>
+            </div>
+            <button type="button" id="addQuestion">Add another question</button>
+            <button type="submit">Create Survey</button>
+        </form>
+    </main>
+    <script>
+        document.getElementById('addQuestion').addEventListener('click', function() {
+            const questionsContainer = document.getElementById('questionsContainer');
+            const newQuestionDiv = document.createElement('div');
+            newQuestionDiv.classList.add('question');
+            newQuestionDiv.innerHTML = `
+                <label for="question">Question:</label>
+                <input type="text" name="question" required>
+                <label for="options">Options (comma separated):</label>
+                <input type="text" name="options" required>
+            `;
+            questionsContainer.appendChild(newQuestionDiv);
+        });
+
+        document.getElementById('surveyInitForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            const surveyTitle = document.getElementById('surveyTitle').value;
+            const questions = Array.from(document.querySelectorAll('.question'));
+            const surveyData = {
+                title: surveyTitle,
+                questions: []
+            };
+
+            questions.forEach(q => {
+                const questionText = q.querySelector('input[name="question"]').value;
+                const optionsText = q.querySelector('input[name="options"]').value.split(',').map(option => option.trim());
+                surveyData.questions.push({ question: questionText, options: optionsText });
+            });
+
+            // Create a URL for survey_creator.html with parameters
+            const surveyUrl = `survey_creator.html?title=${encodeURIComponent(surveyData.title)}&questions=${encodeURIComponent(JSON.stringify(surveyData.questions))}`;
+
+            // Redirect to the new URL
+            window.location.href = surveyUrl;
+        });
+    </script>
+</body>
+</html>
